@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+title: DataverseNL Compliance Check Dashboard
+message: "If you use this software, please cite it using the metadata in this file."
+type: software
+authors:
+  - family-names: "Hernandez Serrano"
+    given-names: "Pedro V"
+    email: "ub-dataverse@maastrichtuniversity.nl"
+    orcid: "https://orcid.org/0000-0002-4646-4666"
+contact:
+  - name: "UM Dataverse Admin Team"
+    email: "ub-dataverse@maastrichtuniversity.nl"
+url: https://maastrichtu-library.github.io/dataverse-compliance-dashboard
+repository-code: https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard
+license: MIT
+abstract: "A lightweight static dashboard for monitoring selected metadata compliance checks in a Maastricht University DataverseNL collection."
+keywords:
+  - DataverseNL
+  - metadata compliance
+  - dashboard
+  - research software
