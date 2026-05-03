@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataverseNL Compliance Check Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="page-header">
+        <div class="header-brand">
+          <img
+            src="assets/logo-um.svg"
+            alt="Maastricht University logo"
+            class="header-logo"
+          />
+          <div class="header-copy">
+            <p class="eyebrow">MAASTRICHT UNIVERSITY LIBRARY</p>
+            <h1>DataverseNL Compliance Check Dashboard</h1>
+            <p class="subtitle">Operational Guidelines Monitoring for UM</p>
+            <p class="intro">
+              This dashboard provides an overview of selected metadata
+              attributes. It checks whether local rules from the UM DataverseNL
+              Operational Guidelines are present (or absent) in the available
+              metadata records.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="dashboard-controls card overview-header">
+          <div class="controls-intro overview-copy">
+            <h2>Compliance Overview</h2>
+            <p class="panel-description" id="overview-import-text">
+              Total Datasets reflects unique published datasets within the
+              UM DataverseNL hierarchy.
+            </p>
+          </div>
+          <div class="filter-control">
+            <label for="faculty-filter">Faculty</label>
+            <select id="faculty-filter" class="pure-input-1"></select>
+          </div>
+        </section>
+
+        <section class="top-dashboard-section">
+          <div class="top-dashboard-grid">
+            <div class="top-dashboard-column top-dashboard-left">
+              <div class="summary-gauge-stack">
+                <section class="summary-section">
+                  <div class="pure-g card-grid">
+                    <div class="pure-u-1 summary-item">
+                      <article class="summary-card card">
+                        <p class="card-label">Total Datasets</p>
+                        <p class="card-value" id="dataset-count">-</p>
+                      </article>
+                    </div>
+                    <div class="pure-u-1 summary-item">
+                      <article class="summary-card card">
+                        <p class="card-label">Most Frequent Missing Check</p>
+                        <p class="card-value card-value-small" id="common-missing">
+                          -
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="gauge-section">
+                  <div class="pure-g chart-grid">
+                    <div class="pure-u-1 pure-u-md-1-2">
+                      <div class="panel card gauge-panel">
+                        <div class="panel-header">
+                          <h2>Overall Compliance Coverage</h2>
+                        </div>
+                        <div id="overall-gauge" class="gauge-chart"></div>
+                      </div>
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-2">
+                      <div class="panel card gauge-panel">
+                        <div class="panel-header">
+                          <h2>Datasets Meeting All Checks</h2>
+                        </div>
+                        <div id="all-checks-gauge" class="gauge-chart"></div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div class="top-dashboard-column top-dashboard-right">
+              <section class="panel card department-chart-panel">
+                <div class="panel-header">
+                  <h2>Average Metadata Checks Passed by Sub-dataverse</h2>
+                </div>
+                <div id="department-chart" class="chart"></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="chart-section">
+          <div class="panel card full-width-chart-panel">
+            <div class="panel-header">
+              <h2>Compliance Coverage by Check Type</h2>
+            </div>
+            <div id="coverage-chart" class="chart chart-wide"></div>
+          </div>
+        </section>
+
+        <section class="panel card">
+          <div class="panel-header table-header">
+            <div>
+              <h2>Dataset Overview</h2>
+              <p class="panel-description">
+                Selected metadata checks based on the available normalized
+                Dataverse metadata.
+              </p>
+            </div>
+            <button id="export-csv" class="pure-button pure-button-primary">
+              Export CSV
+            </button>
+          </div>
+          <div class="table-wrapper dataset-table-scroll">
+            <table class="pure-table pure-table-horizontal" id="dataset-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Faculty</th>
+                  <th>Subdataverse</th>
+                  <th>Publication Date</th>
+                  <th>Checks Passed</th>
+                  <th>Metadata Attributes to Check</th>
+                  <th>Link</th>
+                </tr>
+              </thead>
+              <tbody id="dataset-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel checks-panel card">
+          <div class="panel-header">
+            <h2>Metadata checks currently included in this dashboard</h2>
+          </div>
+          <ol class="checks-list" id="checks-list"></ol>
+          <p class="checks-link-row">
+            <span class="checks-guideline-label">UM DataverseNL Operational Guidelines</span>
+            <a
+              class="pure-button pure-button-primary checks-download-button"
+              href="https://documents.library.maastrichtuniversity.nl/S/759ea4c8-1b80-4e41-8636-731cea321382"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Download
+            </a>
+          </p>
+        </section>
+
+        <section class="panel card about-panel">
+          <div class="panel-header">
+            <h2>About this dashboard</h2>
+          </div>
+          <p>
+            Note: This dashboard is not based on live data, it uses a static
+            metadata import (which is refreshed monthly). The metadata of the
+            organization is accessible for any DataverseNL user, thus it can be
+            checked and audited. More info contact
+            <a href="mailto:ub-dataverse@maastrichtuniversity.nl">
+              ub-dataverse@maastrichtuniversity.nl
+            </a>
+          </p>
+          <p>
+            The current data source considers the
+            <a
+              href="https://dataverse.nl/dataverse/maastricht"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Maastricht University DataverseNL instance
+            </a>.
+            More information about the UM Dataverse is available at
+            <a
+              href="https://library.maastrichtuniversity.nl/research/rdm/dataversenl-support/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              DataverseNL support, as well as the
+            </a>
+            <a
+              href="https://library.maastrichtuniversity.nl/research/rdm/dataversenl-support/terms-of-use-and-operational-guidelines/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Terms of Use and Operational Guidelines
+            </a>.
+            More rules or checks can be considered in the future. However only
+            metadata checks that can reasonably be assessed from available Dataverse
+            attributes can be included.
+          </p>
+          <p>
+            This dashboard supports curator monitoring and service improvement,
+            in line with the
+            <a
+              href="https://library.maastrichtuniversity.nl/research/rdm/rdm-policies/research-data-management-code-of-conduct/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Research Data Management Code of Conduct
+            </a>.
+            It does not replace human review, legal assessment, privacy
+            review, ethical assessment, or disciplinary data stewardship
+            judgement.
+          </p>
+          <p>
+            Please visit the
+            <a
+              href="https://riprofile.library.maastrichtuniversity.nl/dashboard/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              My Research Information Profile
+            </a>
+            application to curate your research outputs and datasets.
+          </p>
+          <p>
+            This software is released under the MIT License. Repository:
+            <a
+              href="https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard"
+              target="_blank"
+              rel="noreferrer"
+            >
+              MaastrichtU-Library/dataverse-compliance-dashboard
+            </a>.
+            Issues can be submitted via
+            <a
+              href="https://github.com/MaastrichtU-library/dataverse-compliance-dashboard/issues"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub issues
+            </a>.
+          </p>
+        </section>
+
+        <section class="panel card hidden" id="error-panel">
+          <div class="panel-header">
+            <h2>Data Load Error</h2>
+          </div>
+          <p id="error-message"></p>
+        </section>
+      </main>
+
+      <footer class="page-footer">
+        <p>
+          &copy; <span id="footer-year"></span> Maastricht University Library |
+          <a
+            href="https://www.maastrichtuniversity.nl/disclaimer"
+            target="_blank"
+            rel="noreferrer"
+          >
+            UM Disclaimer
+          </a>
+        </p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
