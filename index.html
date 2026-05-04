@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DataverseNL Compliance Check Dashboard</title>
+    <title>DataverseNL Metadata Compliance Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,13 +32,13 @@
           />
           <div class="header-copy">
             <p class="eyebrow">MAASTRICHT UNIVERSITY LIBRARY</p>
-            <h1>DataverseNL Compliance Check Dashboard</h1>
-            <p class="subtitle">Operational Guidelines Monitoring for UM</p>
+            <h1>DataverseNL Metadata Compliance Dashboard</h1>
+            <p class="subtitle">Research Data Support</p>
             <p class="intro">
-              This dashboard provides an overview of selected metadata
-              attributes. It checks whether local rules from the UM DataverseNL
-              Operational Guidelines are present (or absent) in the available
-              metadata records.
+              This dashboard monitors compliance provisioned by the UM
+              DataverseNL Operational Guidelines. It uses the metadata
+              attributes available in Dataverse records and it checks whether
+              those requirements are present (or absent).
             </p>
           </div>
         </div>
@@ -49,8 +49,8 @@
           <div class="controls-intro overview-copy">
             <h2>Compliance Overview</h2>
             <p class="panel-description" id="overview-import-text">
-              Total Datasets reflects unique published datasets within the
-              UM DataverseNL hierarchy.
+              Total Published Datasets reflects unique published datasets within
+              the UM DataverseNL hierarchy.
             </p>
           </div>
           <div class="filter-control">
@@ -67,13 +67,13 @@
                   <div class="pure-g card-grid">
                     <div class="pure-u-1 summary-item">
                       <article class="summary-card card">
-                        <p class="card-label">Total Datasets</p>
+                        <p class="card-label">Total Published Datasets</p>
                         <p class="card-value" id="dataset-count">-</p>
                       </article>
                     </div>
                     <div class="pure-u-1 summary-item">
                       <article class="summary-card card">
-                        <p class="card-label">Most Frequent Missing Check</p>
+                        <p class="card-label">Most Frequent Missing Requirement</p>
                         <p class="card-value card-value-small" id="common-missing">
                           -
                         </p>
@@ -87,17 +87,23 @@
                     <div class="pure-u-1 pure-u-md-1-2">
                       <div class="panel card gauge-panel">
                         <div class="panel-header">
-                          <h2>Overall Compliance Coverage</h2>
+                          <h2>Most Requirements Met</h2>
+                          <p class="panel-description">
+                            Share of datasets meeting &gt; 4 requirements.
+                          </p>
                         </div>
-                        <div id="overall-gauge" class="gauge-chart"></div>
+                        <div id="most-requirements-gauge" class="gauge-chart"></div>
                       </div>
                     </div>
                     <div class="pure-u-1 pure-u-md-1-2">
                       <div class="panel card gauge-panel">
                         <div class="panel-header">
-                          <h2>Datasets Meeting All Checks</h2>
+                          <h2>Least Requirements Met</h2>
+                          <p class="panel-description">
+                            Share of datasets meeting &lt; 2 requirements.
+                          </p>
                         </div>
-                        <div id="all-checks-gauge" class="gauge-chart"></div>
+                        <div id="least-requirements-gauge" class="gauge-chart"></div>
                       </div>
                     </div>
                   </div>
@@ -108,7 +114,7 @@
             <div class="top-dashboard-column top-dashboard-right">
               <section class="panel card department-chart-panel">
                 <div class="panel-header">
-                  <h2>Average Metadata Checks Passed by Sub-dataverse</h2>
+                  <h2>What is the average number of metadata items meeting the requirements?</h2>
                 </div>
                 <div id="department-chart" class="chart"></div>
               </section>
@@ -119,7 +125,7 @@
         <section class="chart-section">
           <div class="panel card full-width-chart-panel">
             <div class="panel-header">
-              <h2>Compliance Coverage by Check Type</h2>
+              <h2>How many datasets are meeting the requirements across metadata items?</h2>
             </div>
             <div id="coverage-chart" class="chart chart-wide"></div>
           </div>
@@ -128,11 +134,7 @@
         <section class="panel card">
           <div class="panel-header table-header">
             <div>
-              <h2>Dataset Overview</h2>
-              <p class="panel-description">
-                Selected metadata checks based on the available normalized
-                Dataverse metadata.
-              </p>
+              <h2>Datasets Overview</h2>
             </div>
             <button id="export-csv" class="pure-button pure-button-primary">
               Export CSV
@@ -146,8 +148,8 @@
                   <th>Faculty</th>
                   <th>Subdataverse</th>
                   <th>Publication Date</th>
-                  <th>Checks Passed</th>
-                  <th>Metadata Attributes to Check</th>
+                  <th>Requirements Met</th>
+                  <th>Missing Metadata Requirements</th>
                   <th>Link</th>
                 </tr>
               </thead>
@@ -158,9 +160,63 @@
 
         <section class="panel checks-panel card">
           <div class="panel-header">
-            <h2>Metadata checks currently included in this dashboard</h2>
+            <h2>How the metadata requirements are assessed?</h2>
+            <p class="panel-description requirements-intro">
+              The requirements derived from the UM DataverseNL
+              Operational Guidelines. Each requirement is operationalised as a
+              metadata check where the required information is checked from
+              available Dataverse metadata items.
+            </p>
           </div>
-          <ol class="checks-list" id="checks-list"></ol>
+          <div class="requirements-examples">
+            <details>
+              <summary>Licence requirement</summary>
+              <ul>
+                <li>The dashboard checks whether the dataset has a non-empty licence other than CC0-1.0.</li>
+                <li>This operationalises the local expectation that datasets use CC-BY derivatives unless another permitted condition applies. CC0 are not ideal because does not require the end user to attribute the authors.</li>
+                <li>Based on guideline point 12.1.</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Restricted data requirement</summary>
+              <ul>
+                <li>The dashboard checks whether custom terms or access conditions are present when at least one file has restricted access.</li>
+                <li>Restricted data require clear access conditions so that users and curators understand how access is governed. This is important for cases where (pseudo)anonymized data is shared.</li>
+                <li>Based on guideline points 12.2 and 12.3.</li>
+              </ul>
+            </details>
+            <details>
+              <summary>UM service contact requirement</summary>
+              <ul>
+                <li>The dashboard checks whether at least one UM service contact (email) is present among the dataset contacts. Important: Do not confuse contact with author</li>
+                <li>This supports continuity of responsibility when individual depositors are no longer available. Examples: "RDM support FASoS", "UM Dataverse Admin", and "faculty data manager FPN", "SHE data", etc.</li>
+                <li>Based on guideline point 12.5.</li>
+              </ul>
+            </details>
+            <details>
+              <summary>ORCID requirement</summary>
+              <ul>
+                <li>The dashboard checks whether at least one author has an ORCID.</li>
+                <li>This supports discoverability, attribution, and programmatic linking to the UM <a href="https://cris.maastrichtuniversity.nl/" target="_blank" rel="noreferrer">CRIS system</a> (Pure) for research outputs.</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Description requirement</summary>
+              <ul>
+                <li>The dashboard checks whether a dataset description is present.</li>
+                <li>A description helps users understand the content, context, and purpose of the data publicationm which sometimes is different from the scientific article.</li>
+                <li>Based on section 9 of the guidelines.</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Keywords requirement</summary>
+              <ul>
+                <li>The dashboard checks whether at least one keyword is present.</li>
+                <li>Reason: Keywords support discovery, indexing, and reuse of the data publication.</li>
+                <li>Based on section 9 of the guidelines.</li>
+              </ul>
+            </details>
+          </div>
           <p class="checks-link-row">
             <span class="checks-guideline-label">UM DataverseNL Operational Guidelines</span>
             <a
@@ -211,7 +267,7 @@
             >
               Terms of Use and Operational Guidelines
             </a>.
-            More rules or checks can be considered in the future. However only
+            More requirements or checks can be considered in the future. However only
             metadata checks that can reasonably be assessed from available Dataverse
             attributes can be included.
           </p>
@@ -230,7 +286,7 @@
             judgement.
           </p>
           <p>
-            Please visit the
+            If you are a researcher, please visit the
             <a
               href="https://riprofile.library.maastrichtuniversity.nl/dashboard/"
               target="_blank"

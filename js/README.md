@@ -1,5 +1,3 @@
-# JavaScript
+### Client-side dashboard logic.
 
-Client-side dashboard logic.
-
-`app.js` loads the normalized JSON data, evaluates the metadata checks, and renders the filters, charts, gauges, and table.
+`app.js` loads the normalized JSON data, evaluates the metadata checks that operationalise the monitored metadata requirements, and renders the filters, charts, gauges, and table.

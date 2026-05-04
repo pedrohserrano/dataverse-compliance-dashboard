@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: DataverseNL Compliance Check Dashboard
+title: DataverseNL Metadata Compliance Dashboard
 message: "If you use this software, please cite it using the metadata in this file."
 type: software
 authors:
@@ -13,9 +13,8 @@ contact:
 url: https://maastrichtu-library.github.io/dataverse-compliance-dashboard
 repository-code: https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard
 license: MIT
-abstract: "A lightweight static dashboard for monitoring selected metadata compliance checks in a Maastricht University DataverseNL collection."
+abstract: "A lightweight static dashboard for monitoring selected metadata requirements in a Maastricht University DataverseNL collection."
 keywords:
-  - DataverseNL
   - metadata compliance
   - dashboard
   - research software

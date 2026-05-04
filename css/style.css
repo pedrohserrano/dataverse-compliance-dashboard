@@ -448,6 +448,10 @@ a.pure-button-primary:visited:focus {
   color: var(--um-text);
 }
 
+.requirements-intro {
+  margin-bottom: 0.85rem;
+}
+
 .checks-list strong {
   color: var(--um-blue);
 }
@@ -473,6 +477,39 @@ a.pure-button-primary:visited:focus {
 .checks-download-button {
   padding: 0.38rem 0.8rem;
   font-size: 0.85rem;
+}
+
+.requirements-examples {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.requirements-examples details {
+  border: 1px solid var(--um-border);
+  border-radius: 8px;
+  background: var(--um-bg);
+  padding: 0.72rem 0.85rem;
+}
+
+.requirements-examples summary {
+  cursor: pointer;
+  color: var(--um-blue);
+  font-weight: 700;
+}
+
+.requirements-examples summary:focus {
+  outline: 3px solid rgba(0, 127, 173, 0.3);
+  outline-offset: 2px;
+}
+
+.requirements-examples ul {
+  margin: 0.65rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--um-text);
+}
+
+.requirements-examples li + li {
+  margin-top: 0.35rem;
 }
 
 .about-panel p {

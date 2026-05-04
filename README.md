@@ -1,32 +1,47 @@
-# DataverseNL Compliance Check Dashboard 📊
+# DataverseNL Metadata Compliance Dashboard 📊
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Static Site](https://img.shields.io/badge/Static-HTML-orange.svg)
-![GitHub Pages Ready](https://img.shields.io/badge/Hosting-GitHub%20Pages%20Ready-brightgreen.svg)
 
-A static dashboard for monitoring selected metadata compliance checks in a Maastricht University DataverseNL collection.
+This dashboard monitors compliance with selected metadata requirements derived from the UM DataverseNL Operational Guidelines, using the metadata items available in Dataverse records.
 
-This dashboard provides an overview of selected metadata attributes. It checks whether local rules from the UM DataverseNL Operational Guidelines are present (or absent) in the available metadata records.
+![Dashboard screen recording](assets/dashboard.gif)
 
-Total Datasets means: unique published datasets within the Maastricht University DataverseNL hierarchy.
+## How the metadata requirements are assessed ✅
 
-## Metadata checks currently included in this dashboard ✅
+1. CC-BY licence for non restricted data → Based on guideline point 12.1.
+   For the current implementation, this requirement is assessed by checking that the dataset has a non-empty licence other than CC0-1.0.
+2. Custom terms for restricted data → Based on guideline points 12.2–12.3.
+3. UM service contact is present → Based on guideline point 12.5.
+   Because the crawler export does not expose dataset contact emails, this requirement is assessed from approved service-contact labels in the dataset contact metadata. Current labels are: `Data Management Law`, `Data steward SBE`, `Datamanagement FPN`, `Dataverse Support Contact`, `DataverseNL Team`, `DataverseNL UM contact`, `DataverseNL UM-UL team`, `Faculty Data Manager`, `Faculty Data Manager FPN`, `FASoS Data Steward`, `ICIS office`, `Law and Tech Lab`, `Law Faculty Data Management Services`, `LAW RDM support`, `RDM Services`, `RDM Sevices`, `RDM support FASoS`, `RDM support LAW`, `rdm-roa`, `rdm-sbe`, `SBE Faculty Data Steward`, `SBE RDM`, `SBE Research Data Management`, `SBE Research Data Management (Maastricht University)`, `Shedata`, `UB Dataverse`, `UB Dataverse support`, `UM Admin`, `UM Dataverse Admin`, `UM Dataverse Support`, and `UM DataverseNL`.
+4. At least one author has an ORCID → It is required for discoverability and be programmatically linked to the [CRIS system](https://cris.maastrichtuniversity.nl/) for research outputs at UM.
+5. Description is present → Based on section 9 of the guidelines.
+6. Keywords are present → Based on section 9 of the guidelines.
 
-1. Default licence should be CC BY 4.0 → Based on guideline point 12.1.
-   For the current implementation, this check passes when a dataset has a non-empty licence other than CC0-1.0.
-2. Restricted data should include custom terms → Based on guideline points 12.2–12.3.
-3. UM service contact should be present → Based on guideline point 12.5.
-   Accepted service contacts currently include: `ub-dataverse@maastrichtuniversity.nl`, `rdm-services@maastrichtuniversity.nl`, `datamanagement-fpn@maastrichtuniversity.nl`, `rdm-fasos@maastrichtuniversity.nl`, `rdm-sbe@maastrichtuniversity.nl`, `rdm-roa@maastrichtuniversity.nl`.
-4. At least one author should have an ORCID → It is required for discoverability and be programmatically linked to the [CRIS system](https://cris.maastrichtuniversity.nl/) for research outputs at UM.
-5. Description and keywords should be present → Based on guideline points 9, 9.1 and 9.3.
+The six monitored requirements are:
+
+- CC-BY licence for non restricted data
+- Custom terms for restricted data
+- UM service contact is present
+- At least one author has an ORCID
+- Description is present
+- Keywords are present
+
+The `Meeting Most Requirements` gauge shows the share of datasets meeting more than 4 requirements. The `Meeting Least Requirements` gauge shows the share of datasets meeting fewer than 2 requirements.
 
 [View the UM DataverseNL Operational Guidelines](https://documents.library.maastrichtuniversity.nl/S/759ea4c8-1b80-4e41-8636-731cea321382)
 
-## Data source & software architecture 🧩
+## Data source and architecture 🧩
 
-The browser app does not query Dataverse live. It reads normalized static JSON from the repository, currently [data/datasets.json](/Users/pedrohserrano/dataverse-compliance-dashboard/data/datasets.json), and renders summary cards, gauges, charts, filters, and the dataset table entirely client-side around checks passed, compliance coverage, and metadata attributes to check.
+The browser app does not query Dataverse live. It reads normalized static JSON from the repository, currently [data/datasets.json](https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard/data/datasets.json)
 
-Raw metadata is gathered externally from <https://dataverse.nl/dataverse/maastricht> using [`scholarsportal/dataverse-metadata-crawler`](https://github.com/scholarsportal/dataverse-metadata-crawler). Raw crawler exports should be placed in `data/raw/`, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON. No API token is exposed to the browser; if a token is used locally, it should live in `TOKEN.txt`, which must remain git-ignored.
+Raw metadata is gathered from [UM Dataverse instance](https://dataverse.nl/dataverse/maastricht>) using [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler). Raw crawler exports should be placed in `data/raw/`, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON. No API token is exposed to the browser; if a token is used locally, it should live in `TOKEN.txt`, which must remain git-ignored.
+
+The service-contact allowlist audit can be exported locally as a two-column CSV with `contact_label` and `persistent_id`. The generated CSV is git-ignored. Regenerate it after refreshing `data/datasets.json` with:
+
+```bash
+python3 scripts/export_service_contact_audit.py data/datasets.json data/service_contact_allowlist_audit.csv
+```
 
 The workflow is kept separate:
 
@@ -56,13 +71,13 @@ Then open `http://localhost:8000`.
 
 ## Citation 📚
 
-If you use this software in research, please cite the repository metadata in [CITATION.cff](/Users/pedrohserrano/dataverse-compliance-dashboard/CITATION.cff).
+If you use this software in research, please cite the repository metadata in [CITATION.cff](https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard/CITATION.cff).
 
 ## Acknowledgements 🙌
 
-This dashboard builds on examples and tools from the wider open-science community. One useful reference for visualising Dataverse metadata checks is the [Dataverse dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) associated with the [Alliance Bioversity International and CIAT](https://alliancebioversityciat.org/) and the [bioversity](https://github.com/bioversity) GitHub organisation.
+This dashboard builds on examples and tools from the wider open-science community. One useful reference for visualising Dataverse metadata compliance indicators is the [Dataverse dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) associated with the [Alliance Bioversity International and CIAT](https://alliancebioversityciat.org/) and the [bioversity](https://github.com/bioversity) GitHub organisation.
 
-For metadata gathering, this project uses [`scholarsportal/dataverse-metadata-crawler`](https://github.com/scholarsportal/dataverse-metadata-crawler), maintained by [Scholars Portal](https://github.com/scholarsportal), a service of the Ontario Council of University Libraries, and developed by [Ken Lui](https://github.com/kenlhlui).
+For metadata gathering, this project uses [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler), maintained by [Scholars Portal](https://github.com/scholarsportal), a service of the Ontario Council of University Libraries, and developed by [Ken Lui](https://github.com/kenlhlui) 👍🏼.
 
 [DataverseNL](https://dataverse.nl/) is a consortium service supported by [DANS](https://dans.knaw.nl/en/about/). This dashboard is developed independently by Maastricht University Library and does not imply endorsement by DANS or the other projects acknowledged above.
 
