@@ -67,6 +67,12 @@ def as_string(value: Any) -> str:
     return str(value).strip()
 
 
+def as_dataverse_value_string(value: Any) -> str:
+    if isinstance(value, dict) and "value" in value:
+        return as_dataverse_value_string(value.get("value"))
+    return as_string(value)
+
+
 def as_bool(value: Any) -> bool:
     if isinstance(value, bool):
         return value
@@ -283,21 +289,25 @@ def extract_contacts(record: dict[str, Any]) -> list[dict[str, str]]:
         if isinstance(item, dict):
             contacts.append(
                 {
-                    "name": as_string(
+                    "name": as_dataverse_value_string(
                         first_present(
                             item,
+                            "datasetContactName.value",
+                            "name.value",
+                            "contactName.value",
                             "name",
                             "datasetContactName",
-                            "datasetContactName.value",
                             "contactName",
                         )
                     ),
-                    "email": as_string(
+                    "email": as_dataverse_value_string(
                         first_present(
                             item,
+                            "datasetContactEmail.value",
+                            "email.value",
+                            "contactEmail.value",
                             "email",
                             "datasetContactEmail",
-                            "datasetContactEmail.value",
                             "contactEmail",
                         )
                     ),

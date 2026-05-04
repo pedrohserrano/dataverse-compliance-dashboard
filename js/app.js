@@ -1,37 +1,43 @@
 const CHECK_LABELS = {
-  license_cc_by_4: "Default licence should be CC BY 4.0",
-  restricted_terms: "Restricted data should include custom terms",
-  um_service_contact: "UM service contact should be present",
-  author_orcid: "At least one author should have an ORCID",
-  publication_metadata: "Description and keywords should be present",
+  license_cc_by_4: "CC-BY licence for non restricted data",
+  restricted_terms: "Custom terms for restricted data",
+  um_service_contact: "UM service contact is present",
+  author_orcid: "At least one author has an ORCID",
+  description_present: "Description is present",
+  keywords_present: "Keywords are present",
 };
 
 const GUIDELINE_CHECKS = [
   {
     key: "license_cc_by_4",
-    title: "Default licence should be CC BY 4.0",
+    title: "CC-BY licence for non restricted data",
     detail: "Based on guideline point 12.1.",
   },
   {
     key: "restricted_terms",
-    title: "Restricted data should include custom terms",
+    title: "Custom terms for restricted data",
     detail: "Based on guideline points 12.2–12.3.",
   },
   {
     key: "um_service_contact",
-    title: "UM service contact should be present",
-    detail: "Based on guideline point 12.5.",
+    title: "UM service contact is present",
+    detail: "Based on guideline point 12.5; checked against approved service-contact labels in the dataset contact metadata.",
   },
   {
     key: "author_orcid",
-    title: "At least one author should have an ORCID",
+    title: "At least one author has an ORCID",
     detailHtml:
       'It is required for discoverability and be programmatically linked to the <a href="https://cris.maastrichtuniversity.nl/" target="_blank" rel="noreferrer">CRIS system</a> for research outputs at UM.',
   },
   {
-    key: "publication_metadata",
-    title: "Description and keywords should be present",
-    detail: "Based on guideline points 9, 9.1 and 9.3.",
+    key: "description_present",
+    title: "Description is present",
+    detail: "Based on section 9 of the guidelines.",
+  },
+  {
+    key: "keywords_present",
+    title: "Keywords are present",
+    detail: "Based on section 9 of the guidelines.",
   },
 ];
 
@@ -50,13 +56,38 @@ const MAASTRICHT_TOP_LEVELS = new Set([
   "University Library",
 ]);
 
-const APPROVED_UM_SERVICE_CONTACTS = new Set([
-  "ub-dataverse@maastrichtuniversity.nl",
-  "rdm-services@maastrichtuniversity.nl",
-  "datamanagement-fpn@maastrichtuniversity.nl",
-  "rdm-fasos@maastrichtuniversity.nl",
-  "rdm-sbe@maastrichtuniversity.nl",
-  "rdm-roa@maastrichtuniversity.nl",
+const APPROVED_UM_SERVICE_CONTACT_LABELS = new Set([
+  "data management law",
+  "data steward sbe",
+  "datamanagement fpn",
+  "dataverse support contact",
+  "dataversenl team",
+  "dataversenl um contact",
+  "dataversenl um-ul team",
+  "faculty data manager",
+  "faculty data manager fpn",
+  "fasos data steward",
+  "icis office",
+  "law and tech lab",
+  "law faculty data management services",
+  "law rdm support",
+  "rdm services",
+  "rdm sevices",
+  "rdm support fasos",
+  "rdm support law",
+  "rdm-roa",
+  "rdm-sbe",
+  "sbe faculty data steward",
+  "sbe rdm",
+  "sbe research data management",
+  "sbe research data management (maastricht university)",
+  "shedata",
+  "ub dataverse",
+  "ub dataverse support",
+  "um admin",
+  "um dataverse admin",
+  "um dataverse support",
+  "um dataversenl",
 ]);
 const CHART_COLORS = {
   primary: "#001c3d",
@@ -71,6 +102,7 @@ const CHART_COLORS = {
 let chartInstances = [];
 let allDatasets = [];
 let filteredDatasets = [];
+let selectedFacultyFilter = "";
 
 async function loadDashboard() {
   try {
@@ -87,7 +119,6 @@ async function loadDashboard() {
     allDatasets = diagnostics.finalDatasets;
     filteredDatasets = sortDatasetsByPublicationDate(allDatasets);
 
-    renderChecksList();
     setupFacultyFilter(allDatasets);
     setupCsvExport();
     setFooterYear();
@@ -200,7 +231,8 @@ function evaluateDatasetChecks(dataset) {
     restricted_terms: hasRequiredRestrictedTerms(dataset),
     um_service_contact: hasApprovedUmServiceContact(dataset),
     author_orcid: hasAuthorOrcid(dataset),
-    publication_metadata: hasPublicationMetadata(dataset),
+    description_present: hasDescription(dataset),
+    keywords_present: hasKeywords(dataset),
   };
 }
 
@@ -259,9 +291,9 @@ function hasRequiredRestrictedTerms(dataset) {
 }
 
 function hasApprovedUmServiceContact(dataset) {
-  return collectContactEmails(dataset)
-    .map((email) => normalizeEmail(email))
-    .some((email) => APPROVED_UM_SERVICE_CONTACTS.has(email));
+  return collectContactLabels(dataset)
+    .map((label) => normalizeServiceContactLabel(label))
+    .some((label) => APPROVED_UM_SERVICE_CONTACT_LABELS.has(label));
 }
 
 function hasAuthorOrcid(dataset) {
@@ -272,32 +304,34 @@ function hasAuthorOrcid(dataset) {
     : false;
 }
 
-function hasPublicationMetadata(dataset) {
-  const hasDescription =
-    typeof dataset.description === "string" && dataset.description.trim() !== "";
-  const hasKeywords = Array.isArray(dataset.keywords) && dataset.keywords.length > 0;
-  return hasDescription && hasKeywords;
+function hasDescription(dataset) {
+  return typeof dataset.description === "string" && dataset.description.trim() !== "";
 }
 
-function collectContactEmails(dataset) {
+function hasKeywords(dataset) {
+  return Array.isArray(dataset.keywords) && dataset.keywords.length > 0;
+}
+
+function collectContactLabels(dataset) {
   const values = [];
 
-  appendContactEmail(values, dataset.contact_email);
-  appendContactEmail(values, dataset.contactEmail);
-  appendContactEmail(values, dataset.contact);
+  appendContactLabel(values, dataset.contact_name);
+  appendContactLabel(values, dataset.contactName);
+  appendContactLabel(values, dataset.contact);
 
   if (Array.isArray(dataset.contacts)) {
     dataset.contacts.forEach((contact) => {
       if (typeof contact === "string") {
-        appendContactEmail(values, contact);
+        appendContactLabel(values, contact);
         return;
       }
 
       if (contact && typeof contact === "object") {
-        appendContactEmail(values, contact.email);
-        appendContactEmail(values, contact.contactEmail);
-        appendContactEmail(values, contact.contact_email);
-        appendContactEmail(values, contact.value);
+        appendContactLabel(values, contact.name);
+        appendContactLabel(values, contact.contactName);
+        appendContactLabel(values, contact.contact_name);
+        appendContactLabel(values, contact.datasetContactName);
+        appendContactLabel(values, contact.value);
       }
     });
   }
@@ -305,9 +339,10 @@ function collectContactEmails(dataset) {
   if (Array.isArray(dataset.dataset_contacts)) {
     dataset.dataset_contacts.forEach((contact) => {
       if (contact && typeof contact === "object") {
-        appendContactEmail(values, contact.email);
-        appendContactEmail(values, contact.contact_email);
-        appendContactEmail(values, contact.contactEmail);
+        appendContactLabel(values, contact.name);
+        appendContactLabel(values, contact.contact_name);
+        appendContactLabel(values, contact.contactName);
+        appendContactLabel(values, contact.datasetContactName);
       }
     });
   }
@@ -316,7 +351,7 @@ function collectContactEmails(dataset) {
   if (Array.isArray(citationContacts)) {
     citationContacts.forEach((contact) => {
       if (contact && typeof contact === "object") {
-        appendContactEmail(values, contact.datasetContactEmail);
+        appendContactLabel(values, contact.datasetContactName);
       }
     });
   }
@@ -324,20 +359,29 @@ function collectContactEmails(dataset) {
   return values;
 }
 
-function appendContactEmail(values, value) {
+function appendContactLabel(values, value) {
   if (typeof value !== "string") {
     return;
   }
 
-  const trimmed = value.trim();
-  if (trimmed === "" || !trimmed.includes("@")) {
+  const trimmed = extractEmbeddedDataverseValue(value).trim();
+  if (trimmed === "") {
     return;
   }
 
-  const matches = trimmed.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi);
-  if (matches) {
-    matches.forEach((match) => values.push(match));
-  }
+  values.push(trimmed);
+}
+
+function extractEmbeddedDataverseValue(value) {
+  const match = value.match(/['"]value['"]:\s*['"]([^'"]+)['"]/);
+  return match ? match[1] : value;
+}
+
+function normalizeServiceContactLabel(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
 function renderDashboard(datasets) {
@@ -380,9 +424,9 @@ function setupFacultyFilter(datasets) {
   ].join("");
 
   select.addEventListener("change", () => {
-    const selectedFaculty = select.value;
-    const nextDatasets = selectedFaculty
-      ? allDatasets.filter((dataset) => getFacultyValue(dataset) === selectedFaculty)
+    selectedFacultyFilter = select.value;
+    const nextDatasets = selectedFacultyFilter
+      ? allDatasets.filter((dataset) => getFacultyValue(dataset) === selectedFacultyFilter)
       : allDatasets;
     renderDashboard(nextDatasets);
   });
@@ -405,6 +449,9 @@ function renderSummary(datasets) {
 
 function renderChecksList() {
   const list = document.getElementById("checks-list");
+  if (!list) {
+    return;
+  }
   const items = GUIDELINE_CHECKS.map(
     (check) => `
       <li>
@@ -443,7 +490,7 @@ function renderTable(datasets) {
 
 function renderUnmetChecks(unmetChecks) {
   if (!unmetChecks.length) {
-    return '<span class="badge badge-pass">All checks passed</span>';
+    return '<span class="badge badge-pass">All requirements met</span>';
   }
 
   return `<div class="badge-list">${unmetChecks
@@ -453,14 +500,14 @@ function renderUnmetChecks(unmetChecks) {
 
 function renderPassedChecksBadge(passedChecksCount) {
   if (passedChecksCount === CHECK_ORDER.length) {
-    return `<span class="badge badge-pass">${passedChecksCount}/${CHECK_ORDER.length} checks passed</span>`;
+    return `<span class="badge badge-pass">${passedChecksCount}/${CHECK_ORDER.length} requirements met</span>`;
   }
 
   if (passedChecksCount === 0) {
-    return `<span class="badge badge-fail">0/${CHECK_ORDER.length} checks passed</span>`;
+    return `<span class="badge badge-fail">0/${CHECK_ORDER.length} requirements met</span>`;
   }
 
-  return `<span class="badge badge-neutral">${passedChecksCount}/${CHECK_ORDER.length} checks passed</span>`;
+  return `<span class="badge badge-neutral">${passedChecksCount}/${CHECK_ORDER.length} requirements met</span>`;
 }
 
 function renderCharts(datasets) {
@@ -470,6 +517,7 @@ function renderCharts(datasets) {
   const departmentChart = echarts.init(document.getElementById("department-chart"));
   const coverageChart = echarts.init(document.getElementById("coverage-chart"));
   const departmentGroups = getDepartmentAverages(datasets).slice(0, 8);
+  const departmentTooltipLabel = selectedFacultyFilter ? "Sub-dataverse" : "Faculty";
   const metCheckCounts = Object.entries(getMetCheckCounts(datasets))
     .map(([key, count]) => ({
       key,
@@ -483,7 +531,7 @@ function renderCharts(datasets) {
     color: [CHART_COLORS.warning],
     animationDuration: 1050,
     animationEasing: "cubicOut",
-    grid: { top: 36, right: 28, bottom: 28, left: 228, containLabel: false },
+    grid: { top: 8, right: 66, bottom: 28, left: 160, containLabel: false },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "none" },
@@ -497,9 +545,9 @@ function renderCharts(datasets) {
           return "";
         }
         return [
-          `${escapeHtml(item.label)}`,
-          `Average checks passed: ${formatOneDecimal(item.average)} / ${CHECK_ORDER.length}`,
-          `Datasets: ${item.count}`,
+          `${departmentTooltipLabel}: ${escapeHtml(item.label)}`,
+          `Average metadata items meeting requirements: ${formatOneDecimal(item.average)} / ${CHECK_ORDER.length}`,
+          `Datasets included: ${item.count}`,
         ].join("<br>");
       },
     },
@@ -516,11 +564,13 @@ function renderCharts(datasets) {
       axisLabel: {
         formatter: "{value}",
         color: CHART_COLORS.muted,
+        fontSize: 13,
       },
     },
     yAxis: {
       type: "category",
       data: departmentGroups.map((item) => item.label),
+      inverse: true,
       axisLine: {
         lineStyle: { color: CHART_COLORS.grid },
       },
@@ -531,11 +581,12 @@ function renderCharts(datasets) {
         width: 190,
         formatter: (value) => wrapLabel(value, 24),
         color: CHART_COLORS.muted,
+        fontSize: 13,
       },
     },
     series: [
       {
-        name: "Average checks passed",
+        name: "Average metadata items meeting requirements",
         type: "bar",
         data: departmentGroups.map((item) => Number(item.average.toFixed(1))),
         barWidth: 3,
@@ -547,11 +598,19 @@ function renderCharts(datasets) {
         animationDelay: (idx) => idx * 80,
       },
       {
-        name: "Average checks passed",
+        name: "Average metadata items meeting requirements",
         type: "scatter",
         data: departmentGroups.map((item) => Number(item.average.toFixed(1))),
         symbolSize: 14,
         z: 3,
+        label: {
+          show: true,
+          position: "right",
+          formatter: ({ value }) => formatOneDecimal(value),
+          color: CHART_COLORS.primary,
+          fontSize: 13,
+          fontWeight: 600,
+        },
         itemStyle: {
           color: CHART_COLORS.warning,
           borderColor: CHART_COLORS.background,
@@ -566,7 +625,7 @@ function renderCharts(datasets) {
     backgroundColor: CHART_COLORS.background,
     color: [CHART_COLORS.primary],
     animationDuration: 500,
-    grid: { top: 56, right: 32, bottom: 40, left: 210, containLabel: false },
+    grid: { top: 14, right: 58, bottom: 40, left: 200, containLabel: false },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
@@ -576,8 +635,8 @@ function renderCharts(datasets) {
       formatter: (params) => {
         const item = metCheckCounts[params[0].dataIndex];
         return item
-          ? `${escapeHtml(item.label)}<br>Datasets passing this check: ${params[0].value}`
-          : `Datasets passing this check: ${params[0].value}`;
+          ? `Metadata item: ${escapeHtml(item.label)}<br>Datasets meeting this requirement: ${params[0].value}`
+          : `Datasets meeting this requirement: ${params[0].value}`;
       },
     },
     xAxis: {
@@ -591,6 +650,7 @@ function renderCharts(datasets) {
       },
       axisLabel: {
         color: CHART_COLORS.muted,
+        fontSize: 13,
       },
     },
     yAxis: {
@@ -606,14 +666,23 @@ function renderCharts(datasets) {
         width: 200,
         formatter: (value) => wrapLabel(value, 24),
         color: CHART_COLORS.muted,
+        fontSize: 13,
       },
     },
     series: [
       {
-        name: "Checks passed",
+        name: "Requirements met",
         type: "bar",
         data: metCheckCounts.map((item) => item.count),
         barMaxWidth: 42,
+        label: {
+          show: true,
+          position: "right",
+          formatter: "{c}",
+          color: CHART_COLORS.primary,
+          fontSize: 13,
+          fontWeight: 700,
+        },
         itemStyle: {
           borderRadius: [0, 6, 6, 0],
         },
@@ -625,31 +694,33 @@ function renderCharts(datasets) {
 }
 
 function renderGauges(datasets) {
-  const overallGauge = echarts.init(document.getElementById("overall-gauge"));
-  const allChecksGauge = echarts.init(document.getElementById("all-checks-gauge"));
-  const overallPercentage = datasets.length
+  const mostRequirementsGauge = echarts.init(document.getElementById("most-requirements-gauge"));
+  const leastRequirementsGauge = echarts.init(document.getElementById("least-requirements-gauge"));
+  const meetingMostRequirementsPercentage = datasets.length
     ? Math.round(
-        datasets.reduce((sum, dataset) => sum + dataset.checks_passed_percentage, 0) / datasets.length
+        (datasets.filter((dataset) => dataset.passed_checks_count > 4).length /
+          datasets.length) *
+          100
       )
     : 0;
-  const allChecksPassedPercentage = datasets.length
+  const meetingLeastRequirementsPercentage = datasets.length
     ? Math.round(
-        (datasets.filter((dataset) => dataset.passed_checks_count === CHECK_ORDER.length).length /
+        (datasets.filter((dataset) => dataset.passed_checks_count < 2).length /
           datasets.length) *
           100
       )
     : 0;
 
-  overallGauge.setOption(makeGaugeOption(overallPercentage));
-  allChecksGauge.setOption(makeGaugeOption(allChecksPassedPercentage));
-  chartInstances.push(overallGauge, allChecksGauge);
+  mostRequirementsGauge.setOption(makeGaugeOption(meetingMostRequirementsPercentage, CHART_COLORS.primary));
+  leastRequirementsGauge.setOption(makeGaugeOption(meetingLeastRequirementsPercentage, CHART_COLORS.warning));
+  chartInstances.push(mostRequirementsGauge, leastRequirementsGauge);
 }
 
 function getDepartmentAverages(datasets) {
   const groups = new Map();
 
   datasets.forEach((dataset) => {
-    const label = getDepartmentValue(dataset);
+    const label = selectedFacultyFilter ? getDepartmentValue(dataset) : getFacultyValue(dataset);
     if (!groups.has(label)) {
       groups.set(label, { label, totalPassed: 0, count: 0 });
     }
@@ -856,16 +927,23 @@ function getMostFrequentMissingCheckLabel(unmetCheckCounts) {
 function setupCsvExport() {
   const button = document.getElementById("export-csv");
   button.addEventListener("click", () => {
+    if (!selectedFacultyFilter) {
+      window.alert("please select a faculty to export the view");
+      return;
+    }
+
     const headers = [
-      "title",
-      "faculty",
-      "subdataverse",
-      "publication_date",
-      "checks_passed",
-      "metadata_attributes_to_check",
-      ...CHECK_ORDER,
-      "persistent_id",
-      "url",
+      "Title",
+      "Faculty",
+      "Subdataverse",
+      "Publication Date",
+      "Requirements Met",
+      "Missing Metadata Requirements",
+      "Approved Service Contact Labels",
+      "All Contact Labels",
+      ...CHECK_ORDER.map((key) => CHECK_LABELS[key]),
+      "Persistent ID",
+      "URL",
     ];
 
     const rows = filteredDatasets.map((dataset) => [
@@ -873,8 +951,10 @@ function setupCsvExport() {
       getFacultyValue(dataset),
       formatSubdataversePathForTable(dataset),
       dataset.publication_date || "",
-      `${dataset.passed_checks_count}/${CHECK_ORDER.length} checks passed`,
+      `${dataset.passed_checks_count}/${CHECK_ORDER.length} requirements met`,
       (dataset.unmet_checks || dataset.missing_checks || []).join("; "),
+      getApprovedServiceContactLabels(dataset).join("; "),
+      getUniqueContactLabels(dataset).join("; "),
       ...CHECK_ORDER.map((key) => dataset.checks[key]),
       dataset.persistent_id || "",
       dataset.url || "",
@@ -888,13 +968,23 @@ function setupCsvExport() {
     const downloadUrl = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = "dataversenl-compliance-checks.csv";
+    link.download = "dataversenl-metadata-requirements.csv";
     link.click();
     URL.revokeObjectURL(downloadUrl);
   });
 }
 
-function makeGaugeOption(value) {
+function getApprovedServiceContactLabels(dataset) {
+  return getUniqueContactLabels(dataset).filter((label) =>
+    APPROVED_UM_SERVICE_CONTACT_LABELS.has(normalizeServiceContactLabel(label))
+  );
+}
+
+function getUniqueContactLabels(dataset) {
+  return Array.from(new Set(collectContactLabels(dataset)));
+}
+
+function makeGaugeOption(value, progressColor) {
   return {
     backgroundColor: CHART_COLORS.background,
     animationDuration: 500,
@@ -922,7 +1012,7 @@ function makeGaugeOption(value) {
           width: 18,
           roundCap: true,
           itemStyle: {
-            color: value >= 50 ? CHART_COLORS.primary : CHART_COLORS.warning,
+            color: progressColor,
           },
         },
         axisTick: {
@@ -971,10 +1061,6 @@ function normalizeText(value) {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
-}
-
-function normalizeEmail(value) {
-  return String(value ?? "").trim().toLowerCase();
 }
 
 function isRestrictedValue(value) {
@@ -1080,7 +1166,7 @@ function wrapLabel(value, maxCharsPerLine = 22) {
 
 function renderOverviewImportText(importDate) {
   const formattedDate = formatImportDate(importDate);
-  const baseText = "Selected compliance checks based on the latest DataverseNL metadata import.";
+  const baseText = "Selected compliance indicators based on the latest DataverseNL metadata import.";
 
   setText(
     "overview-import-text",
