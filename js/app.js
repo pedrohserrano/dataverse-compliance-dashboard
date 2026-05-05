@@ -42,6 +42,8 @@ const GUIDELINE_CHECKS = [
 ];
 
 const CHECK_ORDER = GUIDELINE_CHECKS.map((check) => check.key);
+const MOST_REQUIREMENTS_THRESHOLD = 5;
+const SOME_REQUIREMENTS_THRESHOLD = Math.ceil(CHECK_ORDER.length / 2);
 const MAASTRICHT_TOP_LEVELS = new Set([
   "Faculty of Psychology and Neuroscience",
   "School of Business and Economics",
@@ -707,25 +709,25 @@ function renderCharts(datasets) {
 
 function renderGauges(datasets) {
   const mostRequirementsGauge = echarts.init(document.getElementById("most-requirements-gauge"));
-  const leastRequirementsGauge = echarts.init(document.getElementById("least-requirements-gauge"));
+  const someRequirementsGauge = echarts.init(document.getElementById("some-requirements-gauge"));
   const meetingMostRequirementsPercentage = datasets.length
     ? Math.round(
-        (datasets.filter((dataset) => dataset.passed_checks_count > 4).length /
+        (datasets.filter((dataset) => dataset.passed_checks_count >= MOST_REQUIREMENTS_THRESHOLD).length /
           datasets.length) *
           100
       )
     : 0;
-  const meetingLeastRequirementsPercentage = datasets.length
+  const meetingSomeRequirementsPercentage = datasets.length
     ? Math.round(
-        (datasets.filter((dataset) => dataset.passed_checks_count < 2).length /
+        (datasets.filter((dataset) => dataset.passed_checks_count >= SOME_REQUIREMENTS_THRESHOLD).length /
           datasets.length) *
           100
       )
     : 0;
 
-  mostRequirementsGauge.setOption(makeGaugeOption(meetingMostRequirementsPercentage, CHART_COLORS.primary));
-  leastRequirementsGauge.setOption(makeGaugeOption(meetingLeastRequirementsPercentage, CHART_COLORS.warning));
-  chartInstances.push(mostRequirementsGauge, leastRequirementsGauge);
+  mostRequirementsGauge.setOption(makeGaugeOption(meetingMostRequirementsPercentage, CHART_COLORS.warning));
+  someRequirementsGauge.setOption(makeGaugeOption(meetingSomeRequirementsPercentage, CHART_COLORS.warning));
+  chartInstances.push(mostRequirementsGauge, someRequirementsGauge);
 }
 
 function getDepartmentAverages(datasets) {

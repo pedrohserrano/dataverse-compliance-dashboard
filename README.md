@@ -27,7 +27,7 @@ The six monitored requirements are:
 - Description is present
 - Keywords are present
 
-The `Meeting Most Requirements` gauge shows the share of datasets meeting more than 4 requirements. The `Meeting Least Requirements` gauge shows the share of datasets meeting fewer than 2 requirements.
+The `Most Requirements Met` gauge shows the share of filtered datasets meeting at least 5 of the 6 monitored requirements. The `Some Requirements Met` gauge shows the share of filtered datasets meeting at least 3 of the 6 monitored requirements.
 
 [View the UM DataverseNL Operational Guidelines](https://documents.library.maastrichtuniversity.nl/S/759ea4c8-1b80-4e41-8636-731cea321382)
 
