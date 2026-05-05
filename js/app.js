@@ -99,6 +99,17 @@ const CHART_COLORS = {
   background: "#ffffff",
 };
 
+const IMPORT_PROTOCOL = "https://";
+const IMPORT_HOST = "um-dataversenl.s3.eu-west-3.amazonaws.com";
+const IMPORT_FILE = "datasets.json";
+const LOCAL_DATA_URL = "data/datasets.json";
+const REMOTE_IMPORT_URL = `${IMPORT_PROTOCOL}${IMPORT_HOST}/${IMPORT_FILE}`;
+const DATA_LOAD_ERROR_MESSAGE =
+  "Unable to load dashboard data. Please check whether the latest metadata import is available.";
+const isLocalHost =
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const METADATA_IMPORT_URL = isLocalHost ? LOCAL_DATA_URL : REMOTE_IMPORT_URL;
+
 let chartInstances = [];
 let allDatasets = [];
 let filteredDatasets = [];
@@ -106,9 +117,9 @@ let selectedFacultyFilter = "";
 
 async function loadDashboard() {
   try {
-    const response = await fetch("data/datasets.json");
+    const response = await fetch(METADATA_IMPORT_URL);
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: unable to load dataset metadata.`);
+      throw new Error(DATA_LOAD_ERROR_MESSAGE);
     }
 
     const payload = await response.json();
@@ -125,7 +136,8 @@ async function loadDashboard() {
     renderOverviewImportText(sourceData.importDate);
     renderDashboard(filteredDatasets);
   } catch (error) {
-    showError(error);
+    console.error("Dashboard data load failed", error);
+    showError(new Error(DATA_LOAD_ERROR_MESSAGE));
   }
 }
 

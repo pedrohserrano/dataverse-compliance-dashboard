@@ -33,11 +33,11 @@ The `Meeting Most Requirements` gauge shows the share of datasets meeting more t
 
 ## Data source and architecture 🧩
 
-The browser app does not query Dataverse live. It reads normalized static JSON from the repository, currently [data/datasets.json](https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard/data/datasets.json)
+The browser app does not query Dataverse live. It reads the latest normalized dashboard import prepared by the background metadata workflow. When running on `localhost` or `127.0.0.1`, the app falls back to `data/datasets.json` for local development.
 
-Raw metadata is gathered from [UM Dataverse instance](https://dataverse.nl/dataverse/maastricht>) using [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler). Raw crawler exports should be placed in `data/raw/`, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON. No API token is exposed to the browser; if a token is used locally, it should live in `TOKEN.txt`, which must remain git-ignored.
+Raw metadata is gathered from [UM Dataverse instance](https://dataverse.nl/dataverse/maastricht>) using [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler). Raw crawler exports can be placed in the local, git-ignored `data/raw/` directory, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON for the dashboard import. No API token is exposed to the browser; if a token is used locally, it should live in `TOKEN.txt`, which must remain git-ignored.
 
-The service-contact allowlist audit can be exported locally as a two-column CSV with `contact_label` and `persistent_id`. The generated CSV is git-ignored. Regenerate it after refreshing `data/datasets.json` with:
+The service-contact allowlist audit can be exported locally as a two-column CSV with `contact_label` and `persistent_id`. The generated CSV is in the git-ignored `data/` directory. Regenerate it after refreshing local normalized data with:
 
 ```bash
 python3 scripts/export_service_contact_audit.py data/datasets.json data/service_contact_allowlist_audit.csv

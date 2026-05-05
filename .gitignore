@@ -1,7 +1,5 @@
 TOKEN.txt
-data/raw/*
-!data/raw/.gitkeep
+data/
 __pycache__/
 *.pyc
 .DS_Store
-data/service_contact_allowlist_audit.csv
