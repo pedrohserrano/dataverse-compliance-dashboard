@@ -120,7 +120,7 @@
             <div class="top-dashboard-column top-dashboard-right">
               <section class="panel card department-chart-panel">
                 <div class="panel-header">
-                  <h2>What is the average number of metadata items meeting the requirements?</h2>
+                  <h2>What is the average number of metadata items meeting the requirements? (out of 6)</h2>
                 </div>
                 <div id="department-chart" class="chart"></div>
               </section>
@@ -168,10 +168,10 @@
           <div class="panel-header">
             <h2>How the metadata requirements are assessed?</h2>
             <p class="panel-description requirements-intro">
-              The requirements derived from the UM DataverseNL
+              The requirements are derived from the UM DataverseNL
               Operational Guidelines. Each requirement is operationalised as a
-              metadata check where the required information is checked from
-              available Dataverse metadata items.
+              metadata check and the required information is checked from
+              available metadata items.
             </p>
           </div>
           <div class="requirements-examples">
@@ -194,7 +194,8 @@
             <details>
               <summary>UM service contact requirement</summary>
               <ul>
-                <li>The dashboard checks whether at least one UM service contact (email) is present among the dataset contacts. Important: Do not confuse contact with author</li>
+                <li>The dashboard checks whether at least one UM service contact (email) is present among the dataset contacts.</li>
+                <li>Important: Do not confuse "contact(s)" with "author(s)". Authors might be listed as contacts, but not necessarily.</li>
                 <li>This supports continuity of responsibility when individual depositors are no longer available. Examples: "RDM support FASoS", "UM Dataverse Admin", and "faculty data manager FPN", "SHE data", etc.</li>
                 <li>Based on guideline point 12.5.</li>
               </ul>
@@ -218,8 +219,9 @@
               <summary>Keywords requirement</summary>
               <ul>
                 <li>The dashboard checks whether at least one keyword is present.</li>
-                <li>Reason: Keywords support discovery, indexing, and reuse of the data publication.</li>
+                <li>Keywords support discovery, indexing, and reuse of the data publication.</li>
                 <li>Based on section 9 of the guidelines.</li>
+                <li>Ideally keywords are based on controlled vocabularies. <a href="https://www.kuleuven.be/rdm/en/guidance/documentation-metadata/vocabularies" target="_blank" rel="noreferrer">RDM from KU Leuven</a> has a good explanation of how to use them.</li>
               </ul>
             </details>
           </div>
@@ -242,15 +244,13 @@
           </div>
           <p>
             Note: This dashboard is not based on live data, it uses a static
-            metadata import (which is refreshed monthly). The metadata of the
-            organization is accessible for any DataverseNL user, thus it can be
-            checked and audited. More info contact
+            metadata import (which is refreshed monthly). More info contact
             <a href="mailto:ub-dataverse@maastrichtuniversity.nl">
               ub-dataverse@maastrichtuniversity.nl
             </a>
           </p>
           <p>
-            The current data source considers the
+            The current metadata scope considers the
             <a
               href="https://dataverse.nl/dataverse/maastricht"
               target="_blank"
@@ -264,8 +264,8 @@
               target="_blank"
               rel="noreferrer"
             >
-              DataverseNL support, as well as the
-            </a>
+              DataverseNL support
+            </a>, as well as the
             <a
               href="https://library.maastrichtuniversity.nl/research/rdm/dataversenl-support/terms-of-use-and-operational-guidelines/"
               target="_blank"
@@ -287,9 +287,7 @@
             >
               Research Data Management Code of Conduct
             </a>.
-            It does not replace human review, legal assessment, privacy
-            review, ethical assessment, or disciplinary data stewardship
-            judgement.
+            It does not replace legal assessment, privacy review, ethical assessment, or disciplinary data stewardship judgement.
           </p>
           <p>
             If you are a researcher, please visit the
