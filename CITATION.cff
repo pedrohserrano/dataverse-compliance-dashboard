@@ -2,19 +2,31 @@ cff-version: 1.2.0
 title: DataverseNL Metadata Compliance Dashboard
 message: "If you use this software, please cite it using the metadata in this file."
 type: software
+version: "26.05"
+date-released: 2026-05-06
 authors:
   - family-names: "Hernandez Serrano"
-    given-names: "Pedro V"
+    given-names: "Pedro"
     email: "ub-dataverse@maastrichtuniversity.nl"
     orcid: "https://orcid.org/0000-0002-4646-4666"
 contact:
   - name: "UM Dataverse Admin Team"
     email: "ub-dataverse@maastrichtuniversity.nl"
-url: https://maastrichtu-library.github.io/dataverse-compliance-dashboard
+doi: 10.5281/zenodo.20052424
+url: https://maastrichtu-library.github.io/dataverse-compliance-dashboard/
 repository-code: https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard
+repository-artifact: https://doi.org/10.5281/zenodo.20052424
 license: MIT
-abstract: "A lightweight static dashboard for monitoring selected metadata requirements in a Maastricht University DataverseNL collection."
+abstract: "This dashboard monitors compliance provisioned by the UM DataverseNL Operational Guidelines. It uses the metadata attributes available in Dataverse records and it checks whether those requirements are present (or absent)."
 keywords:
-  - metadata compliance
-  - dashboard
-  - research software
+  - research-data-management
+  - dataverse
+  - data-repository
+  - metadata-compliance
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20052424
+    description: "Zenodo archived release DOI for v26.05."
+  - type: url
+    value: https://maastrichtu-library.github.io/dataverse-compliance-dashboard/
+    description: "Dashboard landing page."

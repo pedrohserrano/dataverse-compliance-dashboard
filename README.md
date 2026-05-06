@@ -1,9 +1,11 @@
 # DataverseNL Metadata Compliance Dashboard 📊
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Static Site](https://img.shields.io/badge/Static-HTML-orange.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20052424.svg)](https://doi.org/10.5281/zenodo.20052424)
 
 This dashboard monitors compliance with selected metadata requirements derived from the UM DataverseNL Operational Guidelines, using the metadata items available in Dataverse records.
+
+✨ [Access the DataverseNL Metadata Compliance Dashboard](https://maastrichtu-library.github.io/dataverse-compliance-dashboard/) ✨
 
 ![Dashboard screen recording](assets/dashboard.gif)
 
@@ -59,11 +61,13 @@ Then open `http://localhost:8000`.
 
 ## Citation 📚
 
-If you use this software in research, please cite the repository metadata in [CITATION.cff](https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard/CITATION.cff).
+If you use this software in research, please cite the repository metadata in [CITATION.cff](https://github.com/MaastrichtU-Library/dataverse-compliance-dashboard/blob/main/CITATION.cff).  
+
+> Hernandez Serrano, P. V. (2026). DataverseNL Metadata Compliance Dashboard (v26.05). Maastricht University Library. [doi.org/10.5281/zenodo.20052424](https://doi.org/10.5281/zenodo.20052424)
 
 ## Acknowledgements 🙌
 
-There is great inspirational work related to metadata monitoring, for instance the [Dataverse compliance dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) that monitors compliance with cg core metadata from [Bioversity International](https://github.com/bioversity).  Or the classic [Dashboard metrics](https://dataverse.org/metrics) from the dataverse project.  
+There is great inspirational work related to metadata monitoring, for instance the [Biodiversity Dataverse dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) that monitors compliance with cg core metadata from [Bioversity International](https://github.com/bioversity).  Or the classic [Dashboard metrics](https://dataverse.org/metrics) from the dataverse project.  
 
 Eventhough there are great clients for metadata extraction, we found a very neat one [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler), maintained by [Scholars Portal](https://github.com/scholarsportal), a service of the Ontario Council of University Libraries, and developed by [Ken Lui](https://github.com/kenlhlui) 👍🏼.  
 
