@@ -18,31 +18,18 @@ This dashboard monitors compliance with selected metadata requirements derived f
 5. Description is present → Based on section 9 of the guidelines.
 6. Keywords are present → Based on section 9 of the guidelines.
 
-The six monitored requirements are:
-
-- CC-BY licence for non restricted data
-- Custom terms for restricted data
-- UM service contact is present
-- At least one author has an ORCID
-- Description is present
-- Keywords are present
-
-The `Most Requirements Met` gauge shows the share of filtered datasets meeting at least 5 of the 6 monitored requirements. The `Some Requirements Met` gauge shows the share of filtered datasets meeting at least 3 of the 6 monitored requirements.
-
 [View the UM DataverseNL Operational Guidelines](https://documents.library.maastrichtuniversity.nl/S/759ea4c8-1b80-4e41-8636-731cea321382)
 
 ## Data source and architecture 🧩
 
-The browser app does not query Dataverse live. It reads the latest normalized dashboard import prepared by the background metadata workflow. When running on `localhost` or `127.0.0.1`, the app falls back to `data/datasets.json` for local development.
-
-Raw metadata is gathered from [UM Dataverse instance](https://dataverse.nl/dataverse/maastricht>) using [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler). Raw crawler exports can be placed in the local, git-ignored `data/raw/` directory, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON for the dashboard import. No API token is exposed to the browser; if a token is used locally, it should live in `TOKEN.txt`, which must remain git-ignored.
-
-The service-contact allowlist audit can be exported locally as a two-column CSV with `contact_label` and `persistent_id`. The generated CSV is in the git-ignored `data/` directory. Regenerate it after refreshing local normalized data with:
+- The browser app does not query Dataverse live. It reads the latest normalized dashboard import prepared by the background metadata workflow.   
+- The metadata import is gathered from the [DataverseNL instance](https://dataverse.nl/dataverse/maastricht) using [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler).  
+- The crawler exports can be placed in the local, git-ignored `data/raw/` directory, and the transformation scripts in `scripts/` convert that output into dashboard-ready JSON for the dashboard import.
+- There is a service-contact allowlist audit that can be exported locally. The generated CSV is in the git-ignored `data/` directory.   
 
 ```bash
 python3 scripts/export_service_contact_audit.py data/datasets.json data/service_contact_allowlist_audit.csv
 ```
-
 The workflow is kept separate:
 
 ```text
@@ -67,7 +54,8 @@ cd dataverse-compliance-dashboard
 python -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+Then open `http://localhost:8000`.  
+**Note:** If you run it from `localhost` or `127.0.0.1`, the app falls back to `data/datasets.json` for local development.
 
 ## Citation 📚
 
@@ -75,9 +63,9 @@ If you use this software in research, please cite the repository metadata in [CI
 
 ## Acknowledgements 🙌
 
-This dashboard builds on examples and tools from the wider open-science community. One useful reference for visualising Dataverse metadata compliance indicators is the [Dataverse dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) associated with the [Alliance Bioversity International and CIAT](https://alliancebioversityciat.org/) and the [bioversity](https://github.com/bioversity) GitHub organisation.
+There is great inspirational work related to metadata monitoring, for instance the [Dataverse compliance dashboard](https://bioversity.github.io/dataverse-dashboard-curation/dataverse/dashboard.html) that monitors compliance with cg core metadata from [Bioversity International](https://github.com/bioversity).  Or the classic [Dashboard metrics](https://dataverse.org/metrics) from the dataverse project.  
 
-For metadata gathering, this project uses [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler), maintained by [Scholars Portal](https://github.com/scholarsportal), a service of the Ontario Council of University Libraries, and developed by [Ken Lui](https://github.com/kenlhlui) 👍🏼.
+Eventhough there are great clients for metadata extraction, we found a very neat one [scholarsportal/dataverse-metadata-crawler](https://github.com/scholarsportal/dataverse-metadata-crawler), maintained by [Scholars Portal](https://github.com/scholarsportal), a service of the Ontario Council of University Libraries, and developed by [Ken Lui](https://github.com/kenlhlui) 👍🏼.  
 
 [DataverseNL](https://dataverse.nl/) is a consortium service supported by [DANS](https://dans.knaw.nl/en/about/). This dashboard is developed independently by Maastricht University Library and does not imply endorsement by DANS or the other projects acknowledged above.
 
